@@ -1,0 +1,45 @@
+.modal {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  justify-content: left;
+  align-items: left;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #0000004d;
+}
+.modal_opened {
+  display: flex;
+  visibility: visible;
+}
+.modal_closed {
+  display: flex;
+  visibility: hidden;
+}
+.modal_container {
+  display: flex;
+  position: relative;
+  background-color: #fff;
+  box-sizing: border-box;
+  width: 100%;
+  box-shadow: 20%; /*check format */
+}
+.modal_form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.modal_close {
+  position: absolute;
+  background: transparent;
+} /* technically there isn't one needed for the Toast form*/
+.modal_submit {
+  background-color: #ff4c00de;
+  border: #333333;
+  border-style: ridge; /*not sure what this is*/
+}
+.modal_link {
+  color: #2b4fb9;
+}

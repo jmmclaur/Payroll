@@ -1,0 +1,153 @@
+/* create a table showing pay group, frequency, start/end dates, pay date, debit date, due date */
+/*create variables now*/
+:root {
+  --dark: #2b2d42;
+  --light: #adb5bd;
+  --border: #dee2e6;
+  --border-btn: #edf2f4;
+}
+
+.payroll {
+  display: flex;
+  flex-direction: column;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.Contracts {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+table {
+  border-spacing: 0px;
+  width: 100%;
+}
+
+.table td,
+.table th {
+  padding: 0.75em;
+  vertical-align: top;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+.table td > a.btn {
+  padding: 0.3em 1em;
+  font-size: 1.1em;
+  margin: 0 0.2em;
+}
+
+.table tr:hover {
+  background-color: #06d6a0;
+}
+
+.table tr:hover td > a {
+  box-shadow: none;
+}
+
+.table .contracts-table .thead-dark th {
+  color: #fff;
+  background-color: var(--dark);
+  border-color: #32383e;
+}
+
+/* for unarchive button confirmation popup*/
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.popup button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.popup button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.popup button:last-child {
+  background-color: #6c757d;
+  color: white;
+}
+
+.popup button:hover {
+  opacity: 0.9;
+}
+
+.selected-row {
+  background-color: rgba(255, 76, 0, 0.87);
+}
+
+.selected-row:hover {
+  background-color: rgba(255, 76, 0, 0.95);
+}
+
+.h2 {
+  font-size: 2rem;
+}
+
+@media only screen and (max-width: 1024px) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tr {
+    border: 1px solid var(--border);
+    margin-bottom: 0.625em;
+  }
+
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50% !important; /* Make room for label */
+    text-align: left !important;
+  }
+
+  td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75em;
+    width: 45%;
+    padding-right: 10px;
+    font-weight: bold;
+  }
+}

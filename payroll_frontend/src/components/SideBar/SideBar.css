@@ -1,0 +1,109 @@
+/*add a sidebar that allows a user to click on tabs (left side) */
+
+.sidebar {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.employment,
+.profile,
+.pay-history,
+.tafw,
+.benefits,
+.taxes-documents {
+  display: flex;
+  font-weight: 600;
+  padding: 0.5rem;
+}
+
+/* The side navigation menu */
+.sidenav {
+  height: 100%; /* 100% Full-height */
+  width: 175px; /* fixed width */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: -250px; /* start position hidden */
+  background-color: rgba(255, 76, 0, 0.87);
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px; /* Place content 20px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+.sidenav-open {
+  left: 0; /* Visible position */
+}
+
+.sidenav-closed {
+  left: -250px; /* Hidden position */
+}
+
+/* The navigation menu links */
+.sidenav a {
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav button,
+.sidenav div {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 18px;
+  color: aliceblue;
+  display: block;
+  transition: 0.3s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidenav button:hover,
+.sidenav div:hover {
+  color: #f1f1f1;
+}
+
+/* Add styling for the open button */
+span {
+  font-size: 30px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  font-size: 36px;
+}
+
+.sidenav button.divider-top {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+  transition: margin-left 0.5s;
+  padding: 20px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}

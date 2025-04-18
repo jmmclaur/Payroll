@@ -1,0 +1,28 @@
+.modal__label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.modal__input {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.modal__input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.modal__error {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: -16px;
+  margin-bottom: 16px;
+}
