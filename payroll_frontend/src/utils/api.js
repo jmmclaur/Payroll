@@ -143,6 +143,32 @@ const unarchiveContract = (contractId, dateUpdates) => {
   }).then(checkResponse);
 };
 
+const requestContract = (contractId, dateUpdates) => {
+  return fetch(`${baseUrl}/payCycles/${contractId}/requested`, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+    body: JSON.stringify(dateUpdates),
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        // Get the error message from the server
+        const errorData = await response.text();
+        throw new Error(
+          `Server responded with ${response.status}: ${errorData}`
+        );
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Detailed error:", error);
+      throw error;
+    });
+};
+
 // Admin: Get all users' contracts
 const getAllUsersContracts = () => {
   return fetch(`${baseUrl}/admin/payCycles/all`, {
@@ -226,6 +252,7 @@ export {
   getInactiveContracts,
   archiveContract,
   unarchiveContract,
+  requestContract,
   getAllUsersContracts,
   modifyContract,
   getAllArchivedContracts,

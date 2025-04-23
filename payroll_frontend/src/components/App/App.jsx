@@ -3,6 +3,7 @@ import "../App/App.css";
 
 import AdminDashboard from "../AdminDashboard/AdminDashboard";
 import ArchivedContracts from "../Payroll/ArchivedContracts";
+import RequestedContracts from "../Payroll/RequestedContracts";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
 import Profile from "../Profile/Profile";
 import ProfileEditModal from "../ProfileEditModal/ProfileEditModal";
@@ -278,6 +279,14 @@ function App() {
               element={
                 <ProtectedRoute isLoggedIn={isLoggedIn}>
                   <ArchivedContracts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/requested"
+              element={
+                <ProtectedRoute isLoggedIn={isLoggedIn}>
+                  <RequestedContracts />
                 </ProtectedRoute>
               }
             />

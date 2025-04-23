@@ -23,7 +23,7 @@ function Header({
               </div>
             </Link>
             <button className="profile_edit" onClick={handleProfileEditModal}>
-              Edit Profile
+              Edit
             </button>
           </>
         ) : (

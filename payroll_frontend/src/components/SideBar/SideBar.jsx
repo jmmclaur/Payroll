@@ -10,6 +10,13 @@ function SideBar({ handleDashboardClick, handlePayrollClick, handleLogout }) {
     setIsOpen(!isOpen); // This will toggle between true and false
   };
 
+  //I want the sidebar to close when you
+  const handleEscClose = (e) => {
+    if (e.key === "Escape") {
+      closeActiveModal();
+    }
+  };
+
   const currentUser = useContext(CurrentUserContext);
   return (
     <div className="sidebar">

@@ -7,6 +7,7 @@ const {
   getInactiveContracts,
   archiveContract,
   unarchiveContract,
+  requestContract,
 } = require("../controllers/payCycles");
 
 //creating and retrieving contracts
@@ -18,5 +19,8 @@ router.get("/inactive", auth, getInactiveContracts);
 // Archive and unarchive routes
 router.patch("/:contractId/archive", auth, archiveContract);
 router.patch("/:contractId/unarchive", auth, unarchiveContract);
+
+// Requested route
+router.patch("/:contractId/requested", auth, requestContract);
 
 module.exports = router;

@@ -1,12 +1,7 @@
 import "./Payroll.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  getInactiveContracts,
-  unarchiveContract,
-  getAllArchivedContracts,
-  getAllUsersContracts,
-} from "../../utils/api";
+import { getInactiveContracts, unarchiveContract } from "../../utils/api";
 import EditForm from "../EditForm/EditForm";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
 
@@ -21,7 +16,6 @@ function ArchivedContracts() {
   const [editPayDate, setEditPayDate] = useState("");
   const [editDebitDate, setEditDebitDate] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [originalContracts, setOriginalContracts] = useState([]);
 
   useEffect(() => {
@@ -223,5 +217,4 @@ function ArchivedContracts() {
 //4.7.2025, moving <button onClick={() => handleUnarchive(selectedContractId)}> to the edit form which will finish this request
 //update line 111 from above to <button onClick={() => handleEditForm()}>
 
-//4.14.2025 getting a 404 error while retrieving archived contracts in the user and admin profiles
 export default ArchivedContracts;
