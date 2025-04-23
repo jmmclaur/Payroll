@@ -169,6 +169,17 @@ const requestContract = (contractId, dateUpdates) => {
     });
 };
 
+const getRequestedContracts = () => {
+  return fetch(`${baseUrl}/payCycles/requested`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+  }).then(checkResponse);
+};
+
 // Admin: Get all users' contracts
 const getAllUsersContracts = () => {
   return fetch(`${baseUrl}/admin/payCycles/all`, {
@@ -253,6 +264,7 @@ export {
   archiveContract,
   unarchiveContract,
   requestContract,
+  getRequestedContracts,
   getAllUsersContracts,
   modifyContract,
   getAllArchivedContracts,

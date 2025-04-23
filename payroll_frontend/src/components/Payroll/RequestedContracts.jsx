@@ -13,118 +13,64 @@
 import "./Payroll.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getInactiveContracts, requestContract } from "../../utils/api";
-import EditForm from "../EditForm/EditForm";
+import { getRequestedContracts, unarchiveContract } from "../../utils/api";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
 
 function RequestedContracts() {
-  //state declarations
-  const [archivedContracts, setArchivedContracts] = useState([]);
+  // State declarations
+  const [requestedContracts, setRequestedContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(null);
   const [selectedContractId, setSelectedContractId] = useState(null);
-  const [isFormVisible, setIsFormVisible] = useState(false);
-  const [editPayDate, setEditPayDate] = useState("");
-  const [editDebitDate, setEditDebitDate] = useState("");
-  const [editDueDate, setEditDueDate] = useState("");
   const [originalContracts, setOriginalContracts] = useState([]);
 
-  //use effect
+  // Fetch requested contracts
   useEffect(() => {
-    const fetchArchivedContracts = async () => {
+    const fetchRequestedContracts = async () => {
       try {
-        const archivedData = await getInactiveContracts();
-        setArchivedContracts(archivedData);
-        setOriginalContracts(archivedData);
+        const data = await getRequestedContracts();
+        setRequestedContracts(data);
+        setOriginalContracts(data);
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching archived contracts:", error);
+        console.error("Error fetching requested contracts:", error);
         setIsLoading(false);
       }
     };
 
-    fetchArchivedContracts();
+    fetchRequestedContracts();
   }, []);
 
-  //handlers
+  // Handlers
   const handleSearch = (term) => {
     if (!term.trim()) {
-      setArchivedContracts(originalContracts);
+      setRequestedContracts(originalContracts);
       return;
     }
-    // Filter from original contracts
     const filteredContracts = originalContracts.filter((contract) =>
       contract._id.includes(term)
     );
-    setArchivedContracts(filteredContracts);
+    setRequestedContracts(filteredContracts);
   };
 
-  const handleRequestClick = (contractId) => {
-    const contract = archivedContracts.find((c) => c._id === contractId);
-    setSelectedContract(contract);
+  const handleUnarchiveClick = (contractId) => {
     setSelectedContractId(contractId);
     setShowConfirmation(true);
   };
 
-  const handlePayDateChange = (e) => {
-    setEditPayDate(e.target.value);
-  };
-
-  const handleDebitDateChange = (e) => {
-    setEditDebitDate(e.target.value);
-  };
-
-  const handleDueDateChange = (e) => {
-    setEditDueDate(e.target.value);
-  };
-
-  const handleEditForm = () => {
-    setShowConfirmation(false); // Hide confirmation popup
-    setIsFormVisible(true); // Show edit form
-
-    //take initial contract dates and add them to the edit form for updating
-    if (selectedContract) {
-      setEditPayDate(selectedContract.payDate.substring(0, 10));
-      setEditDebitDate(selectedContract.debitDate.substring(0, 10));
-      setEditDueDate(selectedContract.dueDate.substring(0, 10));
-    }
-  };
-
-  //handle request should be exactly like archivecontract, just using different words and endpoint
-  const handleRequest = async (contractId) => {
-    const dateUpdates = {
-      payDate: editPayDate,
-      debitDate: editDebitDate,
-      dueDate: editDueDate,
-    };
-
+  const handleUnarchive = async () => {
     try {
-      await requestContract(contractId, dateUpdates);
-
-      const updatedRequestedData = await getInactiveContracts();
-      setArchivedContracts(updatedRequestedData);
-
-      console.log("Date values before request:", {
-        editPayDate,
-        editDebitDate,
-        editDueDate,
-      });
-
+      await unarchiveContract(selectedContractId);
+      const updatedData = await getRequestedContracts();
+      setRequestedContracts(updatedData);
+      setOriginalContracts(updatedData);
       setShowConfirmation(false);
-      setIsFormVisible(false);
-      setSelectedContract(null);
+      setSelectedContractId(null);
     } catch (error) {
-      console.error("Error requesting contract:", error);
-      // Use the dateUpdates object defined above
-      console.error("Error details:", {
-        contractId,
-        dateUpdates,
-      });
+      console.error("Error unarchiving contract:", error);
     }
   };
 
-  //return section
   return (
     <div className="payroll" id="payroll">
       <div className="Contracts">
@@ -156,18 +102,13 @@ function RequestedContracts() {
               <tr>
                 <td colSpan="8">Loading...</td>
               </tr>
-            ) : archivedContracts.length === 0 ? (
+            ) : requestedContracts.length === 0 ? (
               <tr>
-                <td colSpan="8">No archived payroll cycles found</td>
+                <td colSpan="8">No requested payroll cycles found</td>
               </tr>
             ) : (
-              archivedContracts.map((contract) => (
-                <tr
-                  key={contract._id}
-                  className={
-                    contract._id === selectedContractId ? "selected-row" : ""
-                  }
-                >
+              requestedContracts.map((contract) => (
+                <tr key={contract._id}>
                   <td>{contract.payGroup}</td>
                   <td>{contract.frequency}</td>
                   <td>{contract.startDate.substring(0, 10)}</td>
@@ -177,10 +118,10 @@ function RequestedContracts() {
                   <td>{contract.dueDate.substring(0, 10)}</td>
                   <td>
                     <button
-                      onClick={() => handleRequestClick(contract._id)}
+                      onClick={() => handleUnarchiveClick(contract._id)}
                       className="button-secondary"
                     >
-                      Request
+                      Unarchive
                     </button>
                   </td>
                 </tr>
@@ -192,32 +133,21 @@ function RequestedContracts() {
       {showConfirmation && (
         <div className="popup-overlay">
           <div className="popup">
-            <p>Are you sure you want to request this?</p>
+            <p>Are you sure you want to unarchive this contract?</p>
             <div className="popup-buttons">
-              <button onClick={() => handleEditForm()}>Yes</button>
-              <button onClick={() => setShowConfirmation(false)}>No</button>
+              <button onClick={handleUnarchive} className="button-primary">
+                Yes
+              </button>
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="button-secondary"
+              >
+                No
+              </button>
             </div>
           </div>
         </div>
       )}
-      <EditForm
-        isOpen={isFormVisible}
-        payDate={editPayDate}
-        debitDate={editDebitDate}
-        dueDate={editDueDate}
-        handlePayDate={handlePayDateChange}
-        handleDebitDate={handleDebitDateChange}
-        handleDueDate={handleDueDateChange}
-        onSubmit={() => {
-          handleRequest(selectedContractId);
-          setIsFormVisible(false);
-          setSelectedContract(null);
-        }}
-        onClose={() => {
-          setIsFormVisible(false);
-          setSelectedContract(null);
-        }}
-      />
     </div>
   );
 }
