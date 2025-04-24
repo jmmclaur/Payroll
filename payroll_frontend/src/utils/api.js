@@ -76,7 +76,7 @@ const getContract = () => {
 };
 
 const getActiveContracts = () => {
-  return fetch(`${baseUrl}/payCycles/active`, {
+  return fetch(`${baseUrl}/payCycles/me?status=active`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -87,7 +87,7 @@ const getActiveContracts = () => {
 };
 
 const getInactiveContracts = () => {
-  return fetch(`${baseUrl}/payCycles/inactive`, {
+  return fetch(`${baseUrl}/payCycles/me?status=inactive`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -170,7 +170,7 @@ const requestContract = (contractId, dateUpdates) => {
 };
 
 const getRequestedContracts = () => {
-  return fetch(`${baseUrl}/payCycles/requested`, {
+  return fetch(`${baseUrl}/payCycles/me?status=requested`, {
     method: "GET",
     headers: {
       Accept: "application/json",

@@ -52,6 +52,18 @@ const payCycleSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  requestedPayDate: {
+    type: Date,
+    default: null,
+  },
+  requestedDebitDate: {
+    type: Date,
+    default: null,
+  },
+  requestedDueDate: {
+    type: Date,
+    default: null,
+  },
 });
 
 module.exports = mongoose.model("payCycle", payCycleSchema);

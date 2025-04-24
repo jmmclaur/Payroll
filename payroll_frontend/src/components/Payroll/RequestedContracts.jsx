@@ -75,7 +75,7 @@ function RequestedContracts() {
     <div className="payroll" id="payroll">
       <div className="Contracts">
         <Link to="/payroll" className="Unarchived">
-          Unarchived
+          Active
         </Link>
         <Link to="/archived" className="Archived">
           Archived
@@ -113,9 +113,21 @@ function RequestedContracts() {
                   <td>{contract.frequency}</td>
                   <td>{contract.startDate.substring(0, 10)}</td>
                   <td>{contract.endDate.substring(0, 10)}</td>
-                  <td>{contract.payDate.substring(0, 10)}</td>
-                  <td>{contract.debitDate.substring(0, 10)}</td>
-                  <td>{contract.dueDate.substring(0, 10)}</td>
+                  <td>
+                    {contract.requestedPayDate
+                      ? contract.requestedPayDate.substring(0, 10)
+                      : contract.payDate.substring(0, 10)}
+                  </td>
+                  <td>
+                    {contract.requestedDebitDate
+                      ? contract.requestedDebitDate.substring(0, 10)
+                      : contract.debitDate.substring(0, 10)}
+                  </td>
+                  <td>
+                    {contract.requestedDueDate
+                      ? contract.requestedDueDate.substring(0, 10)
+                      : contract.dueDate.substring(0, 10)}
+                  </td>
                   <td>
                     <button
                       onClick={() => handleUnarchiveClick(contract._id)}

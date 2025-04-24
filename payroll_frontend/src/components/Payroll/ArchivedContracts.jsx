@@ -1,7 +1,7 @@
 import "./Payroll.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getInactiveContracts, unarchiveContract } from "../../utils/api";
+import { getInactiveContracts, requestContract } from "../../utils/api";
 import EditForm from "../EditForm/EditForm";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
 
@@ -59,7 +59,7 @@ function ArchivedContracts() {
     console.log("Found matches:", filteredContracts.length);
   };
 
-  const handleUnarchiveClick = (contractId) => {
+  const handleRequestClick = (contractId) => {
     const contract = archivedContracts.find((c) => c._id === contractId);
     setSelectedContract(contract);
     setSelectedContractId(contractId);
@@ -94,17 +94,27 @@ function ArchivedContracts() {
     }
   };
 
-  const handleUnarchive = async (contractId) => {
+  const handleRequest = async (contractId) => {
     try {
+      // Convert dates to ISO format
       const dateUpdates = {
+        payDate: new Date(editPayDate).toISOString(),
+        debitDate: new Date(editDebitDate).toISOString(),
+        dueDate: new Date(editDueDate).toISOString(),
+      };
+
+      // Debug logs
+      console.log("Contract ID:", contractId);
+      console.log("Original dates:", {
         payDate: editPayDate,
         debitDate: editDebitDate,
         dueDate: editDueDate,
-      };
+      });
+      console.log("Converted dates:", dateUpdates);
 
-      await unarchiveContract(contractId, dateUpdates);
+      await requestContract(contractId, dateUpdates);
 
-      // Refresh both active and archived lists
+      // Refresh the archived list
       const updatedArchivedData = await getInactiveContracts();
       setArchivedContracts(updatedArchivedData);
 
@@ -112,7 +122,7 @@ function ArchivedContracts() {
       setIsFormVisible(false);
       setSelectedContract(null);
     } catch (error) {
-      console.error("Error unarchiving contract:", error);
+      console.error("Error requesting contract:", error);
     }
   };
 
@@ -120,7 +130,7 @@ function ArchivedContracts() {
     <div className="payroll" id="payroll">
       <div className="Contracts">
         <Link to="/payroll" className="Unarchived">
-          Unarchived
+          Active
         </Link>
         <Link to="/requested" className="Requested">
           Requested
@@ -168,10 +178,10 @@ function ArchivedContracts() {
                   <td>{contract.dueDate.substring(0, 10)}</td>
                   <td>
                     <button
-                      onClick={() => handleUnarchiveClick(contract._id)}
+                      onClick={() => handleRequestClick(contract._id)}
                       className="button-secondary"
                     >
-                      Unarchive
+                      Request
                     </button>
                   </td>
                 </tr>
@@ -183,7 +193,7 @@ function ArchivedContracts() {
       {showConfirmation && (
         <div className="popup-overlay">
           <div className="popup">
-            <p>Are you sure you want to unarchive this?</p>
+            <p>Are you sure you want to request this contract?</p>
             <div className="popup-buttons">
               <button onClick={() => handleEditForm()}>Yes</button>
               <button onClick={() => setShowConfirmation(false)}>No</button>
@@ -200,7 +210,7 @@ function ArchivedContracts() {
         handleDebitDate={handleDebitDateChange}
         handleDueDate={handleDueDateChange}
         onSubmit={() => {
-          handleUnarchive(selectedContractId);
+          handleRequest(selectedContractId);
           setIsFormVisible(false);
           setSelectedContract(null);
         }}

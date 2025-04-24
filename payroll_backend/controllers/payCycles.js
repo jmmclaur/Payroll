@@ -85,9 +85,9 @@ const createContract = async (req, res) => {
 //RETRIEVE ALL/////////////////////////////////////////////////////////////////////////
 //4.15.2025 I need to adjust this so admin can also get contracts, not juse userId
 
-//new getContract, still getting 0 matches when searching for contractId
 const getContract = async (req, res) => {
   try {
+    const { status } = req.query;
     // Create base query object
     let query = {};
 
@@ -96,15 +96,44 @@ const getContract = async (req, res) => {
       query.owner = req.user._id;
     }
 
-    // Add status filter if specified
-    if (req.query.status === "active") {
-      query.processed = false;
-    } else if (req.query.status === "archived") {
-      query.processed = true;
+    // Add status filter if provided
+    if (status) {
+      switch (status) {
+        case "active":
+          query.processed = false;
+          break;
+        case "inactive":
+          query.processed = true;
+          break;
+        case "requested":
+          query.processed = true;
+          query.unarchiveRequested = true;
+          break;
+      }
     }
 
+    /*
+    // Enhanced status filter
+    switch (req.query.status) {
+      case "active":
+        query.processed = false;
+        query.unarchiveRequested = { $ne: true }; // Not requested for unarchive
+        break;
+      case "archived":
+        query.processed = true;
+        query.unarchiveRequested = { $ne: true }; // Not requested for unarchive
+        break;
+      case "requested":
+        query.processed = true;
+        query.unarchiveRequested = true;
+        break;
+      // If no status specified, return all contracts
+    } */
+
+    console.log("Query being executed:", query);
     const contracts = await Contract.find(query);
     res.status(200).json(contracts);
+    console.log(`Found ${contracts.length} contracts matching criteria`);
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -113,37 +142,6 @@ const getContract = async (req, res) => {
     });
   }
 };
-
-/* original getContract
-const getContract = async (req, res) => {
-  try {
-    // Get the user id from the auth middleware
-    const userId = req.user._id; //changed from contractId to userId
-
-    // Create base query object for user's contracts
-    const query = { owner: userId }; //changed from owner: contractId to userId
-
-    // filter status of query parameters
-    if (req.query.status === "active") {
-      query.processed = false;
-    } else if (req.query.status === "archived") {
-      query.processed = true;
-    }
-    // If no status listed, get all contracts (no additional filter needed)
-
-    // Find contracts based on query
-    const contracts = await Contract.find(query);
-
-    // Send successful response
-    res.status(200).json(contracts);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      message: "Error retrieving contracts",
-      error: err.message,
-    });
-  }
-}; */
 
 //RETRIEVE ACTIVE CONTRACTS ///////////////////////////////////////////////////////////////////////
 
@@ -334,15 +332,19 @@ const unarchiveContract = async (req, res) => {
   try {
     const { contractId } = req.params;
     const userId = req.user._id;
-    const { payDate, debitDate, dueDate } = req.body; // Get the updated dates from request body
-
+    //const { payDate, debitDate, dueDate } = req.body; // Get the updated dates from request body
+    const contract = await Contract.findOne({ _id: contractId, owner: userId });
     const updatedContract = await Contract.findOneAndUpdate(
       { _id: contractId, owner: userId }, // Find this contract
       {
         processed: false,
-        payDate: payDate || undefined, // Only update if provided
-        debitDate: debitDate || undefined,
-        dueDate: dueDate || undefined,
+        payDate: contract.requestedPayDate || contract.payDate,
+        debitDate: contract.requestedDebitDate || contract.debitDate,
+        dueDate: contract.requestedDueDate || contract.dueDate,
+        unarchiveRequested: false, // Reset the request flag
+        requestedPayDate: null, // Clear requested dates
+        requestedDebitDate: null,
+        requestedDueDate: null,
       },
       { new: true } // Return updated document
     );
@@ -369,20 +371,43 @@ const unarchiveContract = async (req, res) => {
 //REQUEST CONTRACT TO BE EDITED/UNARCHIVED //////////////////////////////////////////////////S
 const requestContract = async (req, res) => {
   try {
-    // Regular users can request unarchive
-    const contract = await PayCycle.findByIdAndUpdate(
-      req.params.contractId,
-      { unarchiveRequested: true },
+    const { contractId } = req.params;
+    const userId = req.user._id;
+    const { payDate, debitDate, dueDate } = req.body; // Get the updated dates
+
+    // Find contract and verify ownership
+    const contract = await Contract.findOneAndUpdate(
+      {
+        _id: contractId,
+        owner: userId, // Ensures users can only request their own contracts
+        processed: true, // Only archived contracts can be requested
+      },
+      {
+        unarchiveRequested: true,
+        requestedPayDate: payDate, // to include requested dates on the requested page
+        requestedDebitDate: debitDate,
+        requestedDueDate: dueDate,
+      },
       { new: true }
     );
 
     if (!contract) {
-      return res.status(404).json({ message: "Contract not found" });
+      return res.status(404).json({
+        message:
+          "Contract not found or you don't have permission to request this contract",
+      });
     }
 
-    res.json(contract);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.log(
+      `Contract ${contractId} requested for unarchiving by user ${userId}`
+    );
+    res.status(200).json(contract);
+  } catch (err) {
+    console.error("Error in requestContract:", err);
+    res.status(500).json({
+      message: "Error requesting contract unarchive",
+      error: err.message,
+    });
   }
 };
 
