@@ -91,6 +91,7 @@ function Payroll({
         </Link>
       </div>
       <h2>Active Payrolls</h2>
+      <p>HR+/Customer HR+ Users</p>
       <section className="payroll_list">
         <table className="table">
           <thead className="thead-dark">

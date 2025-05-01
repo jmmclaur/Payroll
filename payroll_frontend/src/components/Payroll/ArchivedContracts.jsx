@@ -137,6 +137,10 @@ function ArchivedContracts() {
         </Link>
       </div>
       <h2>Archived Payrolls</h2>
+      <p>
+        To simulate the Admin - Payroll Calendar page, this would allow
+        HR+/Custom HR+ users to see{" "}
+      </p>
       <AdminSearchBar onSearch={handleSearch} />
       <section className="payroll_list">
         <table className="table">

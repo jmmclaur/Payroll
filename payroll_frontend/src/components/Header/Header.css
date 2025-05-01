@@ -4,6 +4,7 @@
   justify-content: center;
   font-family: "CabinetGrotesk-Bold", sans-serif;
   color: #000;
+  padding-bottom: 20px;
 }
 
 .header_link {
@@ -16,6 +17,10 @@
 
 .header_username {
   display: flex;
+  align-items: center;
+  margin: 0;
+  padding-right: 25px;
+  color: rgba(255, 76, 0, 0.87);
 }
 
 .header_auth {

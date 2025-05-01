@@ -46,14 +46,15 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email })
-    .select("+password")
+    .select("+password") // Currently only selecting password
+    .select("role name email company companyCode") // Add this line to explicitly select these fields
     .then((user) => {
-      console.log("Found user:", user ? "yes" : "no"); // Add this to help identify stuff
+      console.log("Found user with data:", user); // Add this debug log
       if (!user) {
         return Promise.reject(new Error("Incorrect email or password"));
       }
       return bcrypt.compare(password, user.password).then((isMatch) => {
-        console.log("Password match:", isMatch); // looking for a password in the system
+        console.log("Password match:", isMatch);
         if (!isMatch) {
           return Promise.reject(new Error("Incorrect email or password"));
         }

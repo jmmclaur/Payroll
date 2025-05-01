@@ -19,7 +19,7 @@ function Header({
           <>
             <Link className="header_link" to="/profile">
               <div className="header_user">
-                <p className="header_username">Profile: {currentUser?.name}</p>
+                <p className="header_username">Profile - {currentUser?.name}</p>
               </div>
             </Link>
             <button className="profile_edit" onClick={handleProfileEditModal}>

@@ -46,6 +46,7 @@ function SideBar({ handleDashboardClick, handlePayrollClick, handleLogout }) {
         <button className="reports">Reports</button>
         <button className="documents">Documents</button>
         <button className="settings divider-top">Settings</button>
+        <button className="admin">Admin</button>
         <button className="logout divider-top" onClick={handleLogout}>
           Logout
         </button>

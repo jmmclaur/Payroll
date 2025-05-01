@@ -62,7 +62,8 @@ const createUser = async (req, res) => {
 //RETRIEVE USERS
 const login = (req, res) => {
   const { email, password } = req.body;
-  console.log("Login attempt with:", { email, password });
+  console.log("Login attempt with:", { email });
+
   if (!email || !password) {
     return res.status(bad_request).send({
       message: "The email and password fields are required",
@@ -71,16 +72,17 @@ const login = (req, res) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      // Handle successful login
-      console.log("User found:", user);
-      // Generate token
+      console.log("Full user object:", user); // Debug full user object
+      console.log("User role:", user.role); // Debug role specifically
+
       const token = createToken({ _id: user._id });
-      // Remove password from response
       const { password: pwd, ...userWithoutPassword } = user.toObject();
+
+      console.log("User data being sent:", userWithoutPassword); // Debug response data
+
       res.status(200).send({ user: userWithoutPassword, token });
     })
     .catch((err) => {
-      // Handle login error
       console.log("Login error:", err.message);
       res.status(401).send({ message: err.message });
     });

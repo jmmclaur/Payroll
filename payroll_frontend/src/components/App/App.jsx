@@ -17,8 +17,14 @@ import Sidebar from "../SideBar/SideBar";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import { CurrentUserContext } from "../../utils/contexts/CurrentUserContext";
 import { Routes, Route, useNavigate, BrowserRouter } from "react-router-dom";
-import * as auth from "../../utils/auth/auth";
+import auth from "../../utils/auth/auth";
+import { login } from "../../utils/auth/auth";
+//import * as auth from "../../utils/auth/auth";
 import * as api from "../../utils/api";
+
+import PublicRoute from "../Routes/PublicRoute";
+import PrivateRoute from "../Routes/PrivateRoute";
+import AdminRoute from "../Routes/AdminRoute";
 
 function App() {
   //arrays
@@ -82,13 +88,17 @@ function App() {
       .catch((error) => console.error(error));
   };
 
-  const handleLogin = (email, password, isAdmin) => {
-    auth
-      .login(email, password, isAdmin)
+  const handleLogin = (email, password) => {
+    login(email, password) // Use login directly, not auth.login
       .then((data) => {
+        console.log("Login response data:", data);
         console.log("After login, data received:", data);
-        // Add this line to save the token
-        localStorage.setItem("jwt", data.token);
+        console.log("Auth state:", {
+          isUser: auth.isUser,
+          isAdmin: auth.isAdmin,
+          token: auth.token,
+        });
+        localStorage.setItem("jwt", data.token); //save token
         setIsLoggedIn(true);
         return api.getUserInfo(data);
       })
@@ -99,7 +109,7 @@ function App() {
           setCurrentUser({
             name: userData.name,
             _id: userData._id,
-            //role: userData.role,
+            role: userData.role,
           });
           closeActiveModal();
           navigate("/profile");
@@ -191,6 +201,15 @@ function App() {
     console.log("Auth state changed:", { isLoggedIn, currentUser });
   }, [isLoggedIn, currentUser]);
 
+  //token check
+  useEffect(() => {
+    const tokenCheck = auth.checkToken();
+    console.log("Initial token check:", tokenCheck);
+    if (tokenCheck) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   //profile
 
   //sidebar
@@ -253,9 +272,9 @@ function App() {
                       handleDashboardClick={handleDashboardClick}
                       handleContractClick={handleContractClick}
                       handlePayrollClick={handlePayrollClick}
-                      activeModal={activeModal} // Add this
-                      handleContract={handleContract} // Add this
-                      closeActiveModal={closeActiveModal} // Add this
+                      activeModal={activeModal}
+                      handleContract={handleContract}
+                      closeActiveModal={closeActiveModal}
                     />
                   ) : (
                     <div>Loading...</div>
@@ -263,31 +282,40 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/payroll"
               element={
-                <ProtectedRoute isLoggedIn={isLoggedIn}>
-                  <Payroll
-                    isLoggedIn={isLoggedIn}
-                    handleDashboardClick={handleDashboardClick}
-                  />
-                </ProtectedRoute>
+                <PrivateRoute>
+                  <ProtectedRoute isLoggedIn={isLoggedIn}>
+                    <Payroll
+                      isLoggedIn={isLoggedIn}
+                      handleDashboardClick={handleDashboardClick}
+                    />
+                  </ProtectedRoute>
+                </PrivateRoute>
               }
             />
+
             <Route
               path="/archived"
               element={
-                <ProtectedRoute isLoggedIn={isLoggedIn}>
-                  <ArchivedContracts />
-                </ProtectedRoute>
+                <PrivateRoute>
+                  <ProtectedRoute isLoggedIn={isLoggedIn}>
+                    <ArchivedContracts />
+                  </ProtectedRoute>
+                </PrivateRoute>
               }
             />
+
             <Route
               path="/requested"
               element={
-                <ProtectedRoute isLoggedIn={isLoggedIn}>
-                  <RequestedContracts />
-                </ProtectedRoute>
+                <AdminRoute>
+                  <ProtectedRoute isLoggedIn={isLoggedIn}>
+                    <RequestedContracts />
+                  </ProtectedRoute>
+                </AdminRoute>
               }
             />
           </Routes>
