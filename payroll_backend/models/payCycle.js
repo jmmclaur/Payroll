@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 
 //payPeriod, startDate, endDate, debitDate, payDate, frequency, payGroup, processed
 const payCycleSchema = new mongoose.Schema({
+  companyCode: {
+    type: String,
+    required: true,
+  },
   payGroup: {
     type: String,
     required: true,
@@ -48,7 +52,6 @@ const payCycleSchema = new mongoose.Schema({
     required: true,
   },
   unarchiveRequested: {
-    //new 4.15.2025
     type: Boolean,
     default: false,
   },

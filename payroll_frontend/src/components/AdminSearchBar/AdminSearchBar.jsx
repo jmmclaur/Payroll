@@ -22,7 +22,7 @@ const AdminSearchBar = ({ onSearch, isLoading }) => {
     <form onSubmit={handleSubmit} className="admin-search">
       <input
         type="text"
-        placeholder="Search by user name or contract ID..."
+        placeholder="Search by company code or contract ID..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="admin-search__input"

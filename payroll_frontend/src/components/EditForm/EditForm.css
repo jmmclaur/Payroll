@@ -29,7 +29,7 @@
 .modal_form {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  padding: 0 15px 0 15px;
 }
 .modal_close {
   position: absolute;
@@ -42,4 +42,14 @@
 }
 .modal_link {
   color: #2b4fb9;
+}
+.modal_title {
+  display: flex;
+  justify-content: center;
+  padding-top: 15px;
+}
+.modal_actions {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px;
 }

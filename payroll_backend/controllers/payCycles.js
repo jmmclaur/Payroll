@@ -42,6 +42,10 @@ const createContract = async (req, res) => {
     } = req.body;
 
     const userId = req.user._id; // access user id from auth middleware
+    const companyCode = req.user.companyCode;
+
+    console.log("User data:", req.user);
+    console.log("Company code being used:", req.user.companyCode);
 
     console.log("3. About to create contract with data:", {
       payGroup,
@@ -53,6 +57,7 @@ const createContract = async (req, res) => {
       dueDate,
       processed,
       owner: userId,
+      companyCode,
     });
     // Create new contract ///////////////////////////////////////////////////////////////////////
     const newContract = await Contract.create({
@@ -65,6 +70,7 @@ const createContract = async (req, res) => {
       dueDate,
       processed: false, //set as false for new contracts
       owner: userId, // Associate the contract with specific user
+      companyCode,
     });
 
     // schedule auto-archive
@@ -83,20 +89,25 @@ const createContract = async (req, res) => {
 };
 
 //RETRIEVE ALL/////////////////////////////////////////////////////////////////////////
-//4.15.2025 I need to adjust this so admin can also get contracts, not juse userId
+//4.15.2025 I need to adjust this so admin can also get contracts, not just userId
+//5.1.2025 when a contractId is request, how can I get that number sent to admin so they can search it in the search bar?
+//admin needs access to all contractIds
 
 const getContract = async (req, res) => {
   try {
-    const { status } = req.query;
-    // Create base query object
+    const { status, payGroup } = req.query; // Add payGroup to query parameters
     let query = {};
 
-    // If not admin, filter by user ID
-    if (req.user.role !== "admin") {
+    // If admin and payGroup provided, filter by payGroup
+    if (req.user.role === "admin" && payGroup) {
+      query.payGroup = payGroup;
+    }
+    // If not admin, filter by user ID as before
+    else if (req.user.role !== "admin") {
       query.owner = req.user._id;
     }
 
-    // Add status filter if provided
+    // Add status filter if provided (keep your existing status logic)
     if (status) {
       switch (status) {
         case "active":
@@ -111,24 +122,6 @@ const getContract = async (req, res) => {
           break;
       }
     }
-
-    /*
-    // Enhanced status filter
-    switch (req.query.status) {
-      case "active":
-        query.processed = false;
-        query.unarchiveRequested = { $ne: true }; // Not requested for unarchive
-        break;
-      case "archived":
-        query.processed = true;
-        query.unarchiveRequested = { $ne: true }; // Not requested for unarchive
-        break;
-      case "requested":
-        query.processed = true;
-        query.unarchiveRequested = true;
-        break;
-      // If no status specified, return all contracts
-    } */
 
     console.log("Query being executed:", query);
     const contracts = await Contract.find(query);
@@ -331,26 +324,44 @@ const unarchiveContract = async (req, res) => {
 
   try {
     const { contractId } = req.params;
-    const userId = req.user._id;
-    //const { payDate, debitDate, dueDate } = req.body; // Get the updated dates from request body
-    const contract = await Contract.findOne({ _id: contractId, owner: userId });
+
+    // First, find the contract without owner restriction
+    let query = { _id: contractId };
+
+    // Find the contract first
+    const contract = await Contract.findOne(query);
+
+    if (!contract) {
+      return res.status(404).json({ message: "Contract not found" });
+    }
+
+    // Create update query based on user role
+    const updateQuery = { _id: contractId };
+    // Only check owner if not admin
+    if (req.user.role !== "admin") {
+      updateQuery.owner = req.user._id;
+    }
+
     const updatedContract = await Contract.findOneAndUpdate(
-      { _id: contractId, owner: userId }, // Find this contract
+      updateQuery,
       {
         processed: false,
         payDate: contract.requestedPayDate || contract.payDate,
         debitDate: contract.requestedDebitDate || contract.debitDate,
         dueDate: contract.requestedDueDate || contract.dueDate,
-        unarchiveRequested: false, // Reset the request flag
-        requestedPayDate: null, // Clear requested dates
+        unarchiveRequested: false,
+        requestedPayDate: null,
         requestedDebitDate: null,
         requestedDueDate: null,
       },
-      { new: true } // Return updated document
+      { new: true }
     );
 
     if (!updatedContract) {
-      return res.status(404).json({ message: "Contract not found" });
+      return res.status(404).json({
+        message:
+          "Contract not found or you don't have permission to unarchive it",
+      });
     }
 
     // schedule auto-archive for the unarchived contract
@@ -362,8 +373,6 @@ const unarchiveContract = async (req, res) => {
     res.status(500).json({
       message: "Error unarchiving contract",
       error: err.message,
-      details:
-        "There was a problem processing your request to unarchive the contract",
     });
   }
 };
@@ -411,6 +420,35 @@ const requestContract = async (req, res) => {
   }
 };
 
+//GET REQUESTED CONTRACT
+const getRequestedContracts = async (req, res) => {
+  try {
+    let query = {
+      processed: true,
+      unarchiveRequested: true,
+    };
+
+    // If not admin, only show their own contracts
+    if (req.user.role !== "admin") {
+      query.owner = req.user._id;
+    }
+
+    const requestedContracts = await Contract.find(query)
+      .select(
+        "payGroup frequency startDate endDate payDate debitDate dueDate companyCode requestedPayDate requestedDebitDate requestedDueDate"
+      )
+      .sort({ payGroup: 1 }); // Optional: sort by payGroup
+
+    res.status(200).json(requestedContracts);
+  } catch (err) {
+    console.error("Error in getRequestedContracts:", err);
+    res.status(500).json({
+      message: "Error retrieving requested contracts",
+      error: err.message,
+    });
+  }
+};
+
 //DELETE CONTRACT (EVENTUALLY ADD THIS)
 
 module.exports = {
@@ -421,4 +459,5 @@ module.exports = {
   archiveContract, //UPDATE
   unarchiveContract, //UPDATE
   requestContract,
+  getRequestedContracts,
 };

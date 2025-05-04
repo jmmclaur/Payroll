@@ -87,6 +87,7 @@ function RequestedContracts() {
         <table className="table">
           <thead className="thead-dark">
             <tr>
+              <th>Company Code</th>
               <th>Pay Group</th>
               <th>Frequency</th>
               <th>Start Date</th>
@@ -109,6 +110,7 @@ function RequestedContracts() {
             ) : (
               requestedContracts.map((contract) => (
                 <tr key={contract._id}>
+                  <td>{contract.companyCode}</td>
                   <td>{contract.payGroup}</td>
                   <td>{contract.frequency}</td>
                   <td>{contract.startDate.substring(0, 10)}</td>

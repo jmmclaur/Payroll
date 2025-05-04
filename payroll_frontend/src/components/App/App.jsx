@@ -26,6 +26,9 @@ import PublicRoute from "../Routes/PublicRoute";
 import PrivateRoute from "../Routes/PrivateRoute";
 import AdminRoute from "../Routes/AdminRoute";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   //arrays
   const [activeModal, setActiveModal] = useState("");
@@ -69,6 +72,8 @@ function App() {
     setIsLoggedIn(false);
     setCurrentUser({});
   };
+
+  //notification
 
   //forms
   const handleRegistration = (name, email, password, company, companyCode) => {

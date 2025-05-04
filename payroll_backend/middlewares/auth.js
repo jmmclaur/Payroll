@@ -1,8 +1,6 @@
-//auth.js must run first b/c it will verify the token, decode user info, and set req.user
-//the req.user contains the user's role
-
 const { not_authorized } = require("../utils/errors");
 const { verifyToken } = require("../utils/token");
+const User = require("../models/user"); // Add this line to import User model
 
 const auth = async (req, res, next) => {
   try {
@@ -16,7 +14,15 @@ const auth = async (req, res, next) => {
 
     const token = authorization.replace("Bearer ", "");
     const decoded = verifyToken(token);
-    req.user = decoded;
+
+    // Fetch complete user data
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      return res.status(not_authorized).send({ message: "User not found" });
+    }
+
+    // Attach complete user object to request
+    req.user = user;
     next();
   } catch (err) {
     return res.status(not_authorized).send({
