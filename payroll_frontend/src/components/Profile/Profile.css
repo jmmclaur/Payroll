@@ -1,8 +1,8 @@
 .profile {
   width: 100%;
-  background-color: #fff; /*whatever the toast white is */
-  display: grid;
-  grid-area: "profile_sidebar demo";
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .payroll_btn {
@@ -38,6 +38,21 @@
   flex-direction: column;
   width: 100%;
   gap: 15px;
+}
+
+.employee {
+  display: grid;
+  grid-template-areas:
+    "personal status"
+    "tabs jobs";
+  padding: 1rem;
+  gap: 15px;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.profile-btn {
+  display: flex;
 }
 
 table,

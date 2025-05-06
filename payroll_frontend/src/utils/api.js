@@ -253,6 +253,30 @@ const handleUnarchiveRequest = (requestId, status) => {
   }).then(checkResponse);
 };
 
+//Notifications, add it later
+const getNotifications = () => {
+  return fetch(`${baseUrl}/notifications`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+  }).then(checkResponse);
+};
+
+const markNotificationsAsRead = (notificationIds) => {
+  return fetch(`${baseUrl}/notifications/mark-read`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+    body: JSON.stringify({ notificationIds }),
+  }).then(checkResponse);
+};
+
 export {
   checkResponse,
   getUserInfo,
@@ -271,4 +295,6 @@ export {
   createUnarchiveRequest,
   getUnarchiveRequests,
   handleUnarchiveRequest,
+  getNotifications,
+  markNotificationsAsRead,
 };

@@ -3,6 +3,7 @@
 .sidebar {
   display: flex;
   background-color: rgba(0, 0, 0, 0.08);
+  position: relative;
 }
 
 .employment,
@@ -77,6 +78,10 @@ span {
   font-size: 30px;
   cursor: pointer;
   padding: 10px;
+  position: fixed; /* Fix the position */
+  right: 20px; /* Position from right edge */
+  top: 10px; /* Position from top */
+  z-index: 1;
 }
 
 /* Position and style the close button (top right corner) */

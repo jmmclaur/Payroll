@@ -122,4 +122,46 @@ export const createContract = (
   });
 };
 
+//notification for request
+export const createNotification = (username, companyCode, contractId) => {
+  return fetch(`${baseUrl}/api/notifications`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+    body: JSON.stringify({
+      message: `${username} from ${companyCode} wants to unarchive ${contractId}`,
+      type: "unarchive_request",
+      status: "pending",
+    }),
+  }).then(checkResponse);
+};
+
+export const getNotifications = () => {
+  return fetch(`${baseUrl}/api/notifications`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+  }).then(checkResponse);
+};
+
+export const markNotificationsAsRead = (notificationIds) => {
+  return fetch(`${baseUrl}/api/notifications/read`, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+    body: JSON.stringify({
+      notificationIds: notificationIds,
+    }),
+  }).then(checkResponse);
+};
+
 export default auth;

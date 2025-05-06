@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getRequestedContracts, unarchiveContract } from "../../utils/api";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
+//import { createNotification } from "/src/utils/auth";
 
 function RequestedContracts() {
   // State declarations
@@ -60,7 +61,22 @@ function RequestedContracts() {
 
   const handleUnarchive = async () => {
     try {
+      // Get the contract details before unarchiving
+      const contract = requestedContracts.find(
+        (c) => c._id === selectedContractId
+      );
+
+      // First unarchive the contract
       await unarchiveContract(selectedContractId);
+
+      // Send notification
+      await sendUnarchiveNotification(
+        contract.username,
+        contract.companyCode,
+        selectedContractId
+      );
+
+      // Update the UI
       const updatedData = await getRequestedContracts();
       setRequestedContracts(updatedData);
       setOriginalContracts(updatedData);
@@ -68,6 +84,19 @@ function RequestedContracts() {
       setSelectedContractId(null);
     } catch (error) {
       console.error("Error unarchiving contract:", error);
+    }
+  };
+
+  //Notification, add later
+  const sendUnarchiveNotification = async (
+    username,
+    companyCode,
+    contractId
+  ) => {
+    try {
+      await createNotification(username, companyCode, contractId);
+    } catch (error) {
+      console.error("Error sending notification:", error);
     }
   };
 

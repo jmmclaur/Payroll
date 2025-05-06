@@ -68,6 +68,7 @@ function App() {
 
   //complex functions
   const handleLogout = () => {
+    localStorage.removeItem("jwt");
     navigate("/");
     setIsLoggedIn(false);
     setCurrentUser({});
@@ -209,9 +210,24 @@ function App() {
   //token check
   useEffect(() => {
     const tokenCheck = auth.checkToken();
-    console.log("Initial token check:", tokenCheck);
     if (tokenCheck) {
-      setIsLoggedIn(true);
+      api
+        .getUserInfo(tokenCheck)
+        .then((userData) => {
+          if (userData) {
+            setIsLoggedIn(true);
+            setCurrentUser({
+              name: userData.name,
+              _id: userData._id,
+              role: userData.role,
+            });
+            navigate("/"); //redirect to dashboard after a refresh
+          }
+        })
+        .catch((err) => {
+          console.log("Error restoring user session:", err);
+          navigate("/"); //refresh to dashboard even if error exists
+        });
     }
   }, []);
 
@@ -261,6 +277,7 @@ function App() {
             handleProfileEditModal={handleEditClick}
           />
           <Sidebar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+
           <Routes>
             <Route path="/" element={<Main isLoggedIn={isLoggedIn} />} />
 

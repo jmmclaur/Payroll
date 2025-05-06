@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-//import "./Payroll.css";
 import {
   archiveContract,
   getInactiveContracts,
   getActiveContracts,
   unarchiveContract,
+  getNotifications,
+  markNotificationsAsRead,
 } from "../../utils/api";
 
 const AdminDashboard = () => {
@@ -12,17 +13,29 @@ const AdminDashboard = () => {
   const [activeContracts, setActiveContracts] = useState([]);
   const [archivedContracts, setArchivedContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]); //add later
 
   // use effect
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const [archivedData, activeData] = await Promise.all([
-          getInactiveContracts(),
-          getActiveContracts(),
-        ]);
+        // Fetch contracts and notifications in parallel
+        const [archivedData, activeData, notificationsData] = await Promise.all(
+          [getInactiveContracts(), getActiveContracts(), getNotifications()]
+        );
+
         setArchivedContracts(archivedData);
         setActiveContracts(activeData);
+        setNotifications(notificationsData);
+
+        // Mark notifications as read when they're viewed
+        if (notificationsData.length > 0) {
+          const notificationIds = notificationsData.map(
+            (notification) => notification._id
+          );
+          await markNotificationsAsRead(notificationIds);
+        }
+
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -53,6 +66,34 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>
+
+      {/*Notifications Section */}
+      <section className="notifications">
+        <h3>Notifications</h3>
+        <div className="notifications-list">
+          {notifications.length === 0 ? (
+            <p>No new notifications</p>
+          ) : (
+            <ul>
+              {notifications.map((notification) => (
+                <li
+                  key={notification._id}
+                  className={`notification ${
+                    notification.isRead ? "read" : "unread"
+                  }`}
+                >
+                  <span className="notification-message">
+                    {notification.message}
+                  </span>
+                  <span className="notification-date">
+                    {new Date(notification.createdAt).toLocaleDateString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
 
       {/* Active Contracts Section */}
       <section className="active-contracts">
