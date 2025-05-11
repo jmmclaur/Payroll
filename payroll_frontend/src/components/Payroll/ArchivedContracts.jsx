@@ -1,7 +1,11 @@
 import "./Payroll.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getInactiveContracts, requestContract } from "../../utils/api";
+import {
+  getInactiveContracts,
+  requestContract,
+  createUnarchiveRequest,
+} from "../../utils/api";
 import EditForm from "../EditForm/EditForm";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
 
@@ -117,6 +121,7 @@ function ArchivedContracts() {
       // Refresh the archived list
       const updatedArchivedData = await getInactiveContracts();
       setArchivedContracts(updatedArchivedData);
+      setOriginalContracts(updatedArchivedData);
 
       setShowConfirmation(false);
       setIsFormVisible(false);
