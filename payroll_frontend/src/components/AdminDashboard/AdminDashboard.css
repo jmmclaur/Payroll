@@ -1,0 +1,10 @@
+.admin-dashboard {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+}
+
+.admin-dashboard__content {
+  flex: 1;
+  margin-right: 20px;
+}

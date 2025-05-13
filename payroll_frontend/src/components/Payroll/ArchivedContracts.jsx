@@ -8,6 +8,7 @@ import {
 } from "../../utils/api";
 import EditForm from "../EditForm/EditForm";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
+import { createNotification } from "../../utils/auth/auth";
 
 function ArchivedContracts() {
   //existing state declarations
@@ -117,6 +118,10 @@ function ArchivedContracts() {
       console.log("Converted dates:", dateUpdates);
 
       await requestContract(contractId, dateUpdates);
+
+      // Create notification after a successful request
+      const companyCode = localStorage.getItem("companyCode");
+      await createNotification(companyCode, contractId);
 
       // Refresh the archived list
       const updatedArchivedData = await getInactiveContracts();

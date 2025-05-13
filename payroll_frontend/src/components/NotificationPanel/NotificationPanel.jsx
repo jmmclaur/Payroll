@@ -13,7 +13,7 @@ function NotificationPanel() {
     const fetchNotifications = async () => {
       try {
         const data = await getNotifications();
-        setNotifications(data);
+        setNotifications(data.notifications);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -59,11 +59,11 @@ function NotificationPanel() {
             <li
               key={notification._id}
               className={`notification-item ${
-                notification.status === "pending" ? "unread" : ""
+                notification.status === "unread" ? "unread" : ""
               }`}
             >
               <p>{notification.message}</p>
-              {notification.status === "pending" && (
+              {notification.status === "unread" && (
                 <button onClick={() => handleMarkAsRead(notification._id)}>
                   Mark as read
                 </button>

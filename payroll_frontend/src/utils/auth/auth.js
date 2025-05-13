@@ -15,6 +15,8 @@ const auth = {
     this.token = data.token;
     localStorage.setItem("jwt", data.token);
     localStorage.setItem("userRole", data.user.role); //to store the role in localstorage
+    //localStorage.setItem("username", data.user.username);
+    localStorage.setItem("companyCode", data.user.companyCode);
     console.log("LocalStorage after setting:", {
       // Add this
       role: localStorage.getItem("userRole"),
@@ -27,6 +29,8 @@ const auth = {
     this.token = null;
     localStorage.removeItem("jwt");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("username");
+    localStorage.removeItem("companyCode");
   },
 
   checkToken() {
@@ -123,8 +127,8 @@ export const createContract = (
 };
 
 //notification for request
-export const createNotification = (username, companyCode, contractId) => {
-  return fetch(`${baseUrl}/api/notifications`, {
+export const createNotification = (companyCode, contractId) => {
+  return fetch(`${baseUrl}/notifications`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -132,15 +136,17 @@ export const createNotification = (username, companyCode, contractId) => {
       Authorization: `Bearer ${localStorage.getItem("jwt")}`,
     },
     body: JSON.stringify({
-      message: `${username} from ${companyCode} wants to unarchive ${contractId}`,
+      companyCode: companyCode,
+      contractId: contractId,
+      message: "Unarchive request submitted",
       type: "unarchive_request",
-      status: "pending",
+      status: "unread",
     }),
   }).then(checkResponse);
 };
 
 export const getNotifications = () => {
-  return fetch(`${baseUrl}/api/notifications`, {
+  return fetch(`${baseUrl}/notifications`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -151,7 +157,7 @@ export const getNotifications = () => {
 };
 
 export const markNotificationsAsRead = (notificationIds) => {
-  return fetch(`${baseUrl}/api/notifications/read`, {
+  return fetch(`${baseUrl}/notifications/read`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",

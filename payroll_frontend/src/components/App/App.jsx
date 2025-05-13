@@ -221,6 +221,8 @@ function App() {
               _id: userData._id,
               role: userData.role,
             });
+            //check user role for navigation
+
             navigate("/"); //redirect to dashboard after a refresh
           }
         })
@@ -336,6 +338,17 @@ function App() {
                 <AdminRoute>
                   <ProtectedRoute isLoggedIn={isLoggedIn}>
                     <RequestedContracts />
+                  </ProtectedRoute>
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admindashboard"
+              element={
+                <AdminRoute>
+                  <ProtectedRoute isLoggedIn={isLoggedIn}>
+                    <AdminDashboard />
                   </ProtectedRoute>
                 </AdminRoute>
               }

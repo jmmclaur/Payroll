@@ -26,7 +26,7 @@ function SideBar({ handleDashboardClick, handlePayrollClick, handleLogout }) {
         id="mySidenav"
         className={`sidenav ${isOpen ? "sidenav-open" : "sidenav-closed"}`}
       >
-        <Link to="/">
+        <Link to={currentUser.isAdmin ? "/admindashboard" : "/"}>
           <button className="header_clicks" onClick={handleDashboardClick}>
             Dashboard
           </button>

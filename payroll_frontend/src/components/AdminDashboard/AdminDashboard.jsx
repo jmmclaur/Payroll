@@ -4,9 +4,13 @@ import {
   getInactiveContracts,
   getActiveContracts,
   unarchiveContract,
+} from "../../utils/api";
+import NotificationPanel from "../NotificationPanel/NotificationPanel";
+import {
   getNotifications,
   markNotificationsAsRead,
-} from "../../utils/api";
+} from "../../utils/auth/auth";
+import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   // state variables
@@ -66,34 +70,8 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>
-
       {/*Notifications Section */}
-      <section className="notifications">
-        <h3>Notifications</h3>
-        <div className="notifications-list">
-          {notifications.length === 0 ? (
-            <p>No new notifications</p>
-          ) : (
-            <ul>
-              {notifications.map((notification) => (
-                <li
-                  key={notification._id}
-                  className={`notification ${
-                    notification.isRead ? "read" : "unread"
-                  }`}
-                >
-                  <span className="notification-message">
-                    {notification.message}
-                  </span>
-                  <span className="notification-date">
-                    {new Date(notification.createdAt).toLocaleDateString()}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
+      <NotificationPanel />
 
       {/* Active Contracts Section */}
       <section className="active-contracts">
