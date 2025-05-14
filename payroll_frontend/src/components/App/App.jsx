@@ -55,6 +55,10 @@ function App() {
   };
   const handleDashboardClick = () => {
     setActiveModal("dashboard-btn");
+    console.log(currentUser.role, "hi");
+    if (currentUser.role === "admin") {
+      navigate("/admindashboard");
+    }
   };
   const handleContractClick = () => {
     setActiveModal("contract-btn");
@@ -95,7 +99,7 @@ function App() {
   };
 
   const handleLogin = (email, password) => {
-    login(email, password) // Use login directly, not auth.login
+    login(email, password)
       .then((data) => {
         console.log("Login response data:", data);
         console.log("After login, data received:", data);
@@ -104,7 +108,7 @@ function App() {
           isAdmin: auth.isAdmin,
           token: auth.token,
         });
-        localStorage.setItem("jwt", data.token); //save token
+        localStorage.setItem("jwt", data.token);
         setIsLoggedIn(true);
         return api.getUserInfo(data);
       })
@@ -118,7 +122,13 @@ function App() {
             role: userData.role,
           });
           closeActiveModal();
-          navigate("/profile");
+          // Fixed the syntax here
+          if (userData.role === "admin") {
+            // Changed user.Role to userData.role
+            navigate("/admindashboard");
+          } else {
+            navigate("/profile");
+          }
         } else {
           console.log("userData is null");
         }
@@ -223,7 +233,19 @@ function App() {
             });
             //check user role for navigation
 
-            navigate("/"); //redirect to dashboard after a refresh
+            // Instead of always navigating to "/", check the role
+            if (
+              userData.role === "admin" &&
+              window.location.pathname === "/admindashboard"
+            ) {
+              // Stay on admin dashboard if that's where we are
+              return;
+            } else if (window.location.pathname === "/profile") {
+              // Stay on profile if that's where we are
+              return;
+            }
+            // Only redirect to home if we're not on a valid page
+            navigate("/");
           }
         })
         .catch((err) => {

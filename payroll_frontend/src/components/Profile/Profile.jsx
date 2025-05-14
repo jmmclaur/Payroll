@@ -16,7 +16,6 @@ const Profile = ({
     console.log("Missing - name or company undefined");
   }
 
-  //add some random sections for grid profile, include profile edit modal button
   return (
     <div className="profile">
       <section className="profile_sidebar">

@@ -18,6 +18,8 @@ function SideBar({ handleDashboardClick, handlePayrollClick, handleLogout }) {
   };
 
   const currentUser = useContext(CurrentUserContext);
+  console.log(currentUser); //defaulting to user dashboard instead of admin dashboard
+
   return (
     <div className="sidebar">
       {/* toggle changes icon based on sidebar state */}
@@ -26,7 +28,7 @@ function SideBar({ handleDashboardClick, handlePayrollClick, handleLogout }) {
         id="mySidenav"
         className={`sidenav ${isOpen ? "sidenav-open" : "sidenav-closed"}`}
       >
-        <Link to={currentUser.isAdmin ? "/admindashboard" : "/"}>
+        <Link to={currentUser.role === "admin" ? "/admindashboard" : "/"}>
           <button className="header_clicks" onClick={handleDashboardClick}>
             Dashboard
           </button>
