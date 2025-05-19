@@ -253,7 +253,25 @@ const handleUnarchiveRequest = (requestId, status) => {
   }).then(checkResponse);
 };
 
-//Notifications, add it later
+//Notifications
+const createNotification = (companyCode, contractId) => {
+  return fetch(`${baseUrl}/notifications`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
+    body: JSON.stringify({
+      companyCode: companyCode,
+      contractId: contractId,
+      message: `Client from ${companyCode} wants to unarchive ${contractId}`, //template literal is the term
+      type: "unarchive_request",
+      status: "unread",
+    }),
+  }).then(checkResponse);
+};
+
 const getNotifications = () => {
   return fetch(`${baseUrl}/notifications`, {
     method: "GET",
@@ -295,6 +313,7 @@ export {
   createUnarchiveRequest,
   getUnarchiveRequests,
   handleUnarchiveRequest,
+  createNotification,
   getNotifications,
   markNotificationsAsRead,
 };

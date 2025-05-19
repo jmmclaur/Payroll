@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
-import {
+/*import {
   getNotifications,
   markNotificationsAsRead,
-} from "../../utils/auth/auth";
+  createNotification,
+} from "../../utils/auth/auth"; */
+import {
+  createNotification,
+  getNotifications,
+  markNotificationsAsRead,
+} from "../../utils/api";
 import "./NotificationPanel.css";
 
 function NotificationPanel() {
@@ -12,8 +18,17 @@ function NotificationPanel() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
+        console.log("Fetching notifications...");
+        console.log("Auth token:", localStorage.getItem("jwt"));
+        console.log("User role:", localStorage.getItem("userRole"));
+        console.log("Company code:", localStorage.getItem("companyCode"));
         const data = await getNotifications();
-        setNotifications(data.notifications);
+        console.log("Raw data structure:", JSON.stringify(data, null, 2));
+        console.log("Response from getNotifications:", data);
+
+        setNotifications(
+          Array.isArray(data.notifications) ? data.notifications : []
+        );
         setLoading(false);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -22,11 +37,25 @@ function NotificationPanel() {
     };
 
     fetchNotifications();
-    // You might want to add a refresh interval here
     const interval = setInterval(fetchNotifications, 30000); // Refresh every 30 seconds
-
     return () => clearInterval(interval);
   }, []);
+
+  //creating a test notification to see if it appears on admin's screen
+  const handleCreateTestNotification = async () => {
+    try {
+      const companyCode = localStorage.getItem("companyCode");
+      console.log("Creating test notification for company:", companyCode);
+      await createNotification(companyCode, "test-contract-id");
+      // Refresh notifications after creating a new one
+      const data = await getNotifications();
+      setNotifications(
+        Array.isArray(data.notifications) ? data.notifications : []
+      );
+    } catch (error) {
+      console.error("Error creating test notification:", error);
+    }
+  };
 
   const handleMarkAsRead = async (notificationId) => {
     try {
@@ -51,6 +80,9 @@ function NotificationPanel() {
   return (
     <div className="notification-panel">
       <h3>Notifications</h3>
+      <button onClick={handleCreateTestNotification}>
+        Create Test Notification
+      </button>
       {notifications.length === 0 ? (
         <p>No notifications</p>
       ) : (

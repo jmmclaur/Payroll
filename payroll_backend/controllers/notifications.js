@@ -29,11 +29,32 @@ const createNotification = async (req, res) => {
 
 const getNotifications = async (req, res) => {
   try {
-    // Get notifications for the company
-    const notifications = await Notification.find({
+    console.log("User data:", {
+      id: req.user._id,
+      role: req.user.role,
       companyCode: req.user.companyCode,
-      status: "unread", // Only get unread notifications
     });
+
+    let query = {};
+
+    if (req.user.role !== "admin") {
+      // Regular users only see their company's unread notifications
+      query.companyCode = req.user.companyCode;
+      query.status = "unread";
+    } else {
+      // Admins see all notifications by default
+      if (req.query.includeRead !== "true") {
+        query.status = "unread";
+      }
+    }
+
+    console.log("Query:", query);
+
+    const notifications = await Notification.find(query).sort({
+      createdAt: -1,
+    });
+
+    console.log("Found notifications:", notifications.length);
 
     res.json({ notifications });
   } catch (err) {

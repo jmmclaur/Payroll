@@ -8,7 +8,8 @@ import {
 } from "../../utils/api";
 import EditForm from "../EditForm/EditForm";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
-import { createNotification } from "../../utils/auth/auth";
+/*import { createNotification } from "../../utils/auth/auth"; */
+import { createNotification } from "../../utils/api";
 
 function ArchivedContracts() {
   //existing state declarations

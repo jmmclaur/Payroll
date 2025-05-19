@@ -126,7 +126,7 @@ export const createContract = (
   });
 };
 
-//notification for request
+/*notification for request
 export const createNotification = (companyCode, contractId) => {
   return fetch(`${baseUrl}/notifications`, {
     method: "POST",
@@ -146,14 +146,18 @@ export const createNotification = (companyCode, contractId) => {
 };
 
 export const getNotifications = () => {
-  return fetch(`${baseUrl}/notifications`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-    },
-  }).then(checkResponse);
+  const isAdmin = localStorage.getItem("userRole") === "admin";
+  return fetch(
+    `${baseUrl}/notifications${isAdmin ? "?includeRead=true" : ""}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+    }
+  ).then(checkResponse);
 };
 
 export const markNotificationsAsRead = (notificationIds) => {
@@ -168,6 +172,6 @@ export const markNotificationsAsRead = (notificationIds) => {
       notificationIds: notificationIds,
     }),
   }).then(checkResponse);
-};
+}; */
 
 export default auth;
