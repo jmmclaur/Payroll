@@ -3,11 +3,11 @@ const Notification = require("../models/notification"); // You'll need this mode
 const createNotification = async (req, res) => {
   try {
     const companyCode = req.user.companyCode;
-    const { contractId } = req.body;
+    const { contractId, message } = req.body; // Add message to destructuring
     const notification = await Notification.create({
       companyCode,
       contractId,
-      message: "Unarchive request submitted",
+      message: `Client from ${companyCode} wants to unarchive ${contractId}`,
       type: "unarchive_request",
       status: "unread",
     });
@@ -69,10 +69,17 @@ const getNotifications = async (req, res) => {
 
 const markNotificationsAsRead = async (req, res) => {
   try {
-    // Update multiple notifications to read status
-    await Notification.updateMany(
+    const { notificationIds } = req.body;
+
+    if (!Array.isArray(notificationIds)) {
+      return res
+        .status(400)
+        .json({ message: "notificationIds must be an array" });
+    }
+
+    const result = await Notification.updateMany(
       {
-        companyCode: req.user.companyCode,
+        _id: { $in: notificationIds },
         status: "unread",
       },
       {
@@ -80,7 +87,10 @@ const markNotificationsAsRead = async (req, res) => {
       }
     );
 
-    res.json({ message: "Notifications marked as read" });
+    res.json({
+      message: "Notifications marked as read",
+      modifiedCount: result.modifiedCount,
+    });
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).json({ message: "Invalid data" });

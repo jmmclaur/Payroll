@@ -57,12 +57,16 @@ function NotificationPanel() {
     }
   };
 
+  if (loading) {
+    return <div>Loading notifications...</div>;
+  }
+
   const handleMarkAsRead = async (notificationId) => {
     try {
       await markNotificationsAsRead([notificationId]);
-      // Update the local state to reflect the change
-      setNotifications(
-        notifications.map((notification) =>
+      // Instead of fetching all notifications again, update the state directly
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) =>
           notification._id === notificationId
             ? { ...notification, status: "read" }
             : notification
@@ -72,10 +76,6 @@ function NotificationPanel() {
       console.error("Error marking notification as read:", error);
     }
   };
-
-  if (loading) {
-    return <div>Loading notifications...</div>;
-  }
 
   return (
     <div className="notification-panel">

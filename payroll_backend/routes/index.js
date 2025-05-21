@@ -13,6 +13,7 @@ const {
   archiveContract,
   unarchiveContract,
 } = require("../controllers/payCycles");
+const { markNotificationsAsRead } = require("../controllers/notifications");
 
 // Authentication routes (no auth middleware needed)
 router.post("/signin", login);
@@ -31,6 +32,7 @@ router.post("/missed", auth, [getInactiveContracts, unarchiveContract]);
 
 // Notifications
 router.use("/notifications", auth, notificationRouter);
+//router.post("/notifications/mark-read", auth, markNotificationsAsRead)
 
 // Error handling must be last
 router.use((req, res) => {

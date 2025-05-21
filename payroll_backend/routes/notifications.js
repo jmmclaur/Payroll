@@ -6,8 +6,8 @@ const {
   markNotificationsAsRead,
 } = require("../controllers/notifications");
 
-router.post("/", auth, createNotification);
-router.get("/", auth, getNotifications);
-router.patch("/read", auth, markNotificationsAsRead);
+router.post("/", createNotification);
+router.get("/", getNotifications);
+router.post("/mark-read", markNotificationsAsRead);
 
 module.exports = router;
