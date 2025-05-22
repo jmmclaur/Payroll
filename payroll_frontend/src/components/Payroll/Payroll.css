@@ -128,6 +128,16 @@ table {
   margin-left: 20px;
 }
 
+.pending-unarchive {
+  background-color: #ffd700;
+  transition: background-color 0.3s ease;
+}
+
+/* When hovering over a pending row, we can make it slightly darker */
+.pending-unarchive:hover {
+  background-color: #ffcd00;
+}
+
 @media only screen and (max-width: 1024px) {
   table,
   thead,

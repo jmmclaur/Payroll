@@ -8,8 +8,7 @@ import {
 } from "../../utils/api";
 import EditForm from "../EditForm/EditForm";
 import AdminSearchBar from "../AdminSearchBar/AdminSearchBar";
-/*import { createNotification } from "../../utils/auth/auth"; */
-import { createNotification } from "../../utils/api";
+import { createNotification, getNotifications } from "../../utils/api";
 
 function ArchivedContracts() {
   //existing state declarations
@@ -23,6 +22,7 @@ function ArchivedContracts() {
   const [editDebitDate, setEditDebitDate] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
   const [originalContracts, setOriginalContracts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const fetchArchivedContracts = async () => {
@@ -38,6 +38,32 @@ function ArchivedContracts() {
     };
 
     fetchArchivedContracts();
+  }, []);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const notificationsData = await getNotifications();
+        setNotifications(notificationsData.notifications);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchNotifications();
+
+    // Set up visibility change listener
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchNotifications();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   // Modify the search handler
@@ -100,6 +126,15 @@ function ArchivedContracts() {
     }
   };
 
+  const refreshNotifications = async () => {
+    try {
+      const notificationsData = await getNotifications();
+      setNotifications(notificationsData.notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
   const handleRequest = async (contractId) => {
     try {
       // Convert dates to ISO format
@@ -128,6 +163,7 @@ function ArchivedContracts() {
       const updatedArchivedData = await getInactiveContracts();
       setArchivedContracts(updatedArchivedData);
       setOriginalContracts(updatedArchivedData);
+      await refreshNotifications();
 
       setShowConfirmation(false);
       setIsFormVisible(false);
@@ -135,6 +171,21 @@ function ArchivedContracts() {
     } catch (error) {
       console.error("Error requesting contract:", error);
     }
+  };
+
+  //change color of contract row when requested to show pending
+  const getRowClassName = (contractId) => {
+    // Check if there's a pending unarchive request for this contract
+    const isPending = notifications.some(
+      (notification) =>
+        notification.contractId === contractId &&
+        notification.type === "unarchive_request" &&
+        notification.status === "unread"
+    );
+
+    return `${isPending ? "pending-unarchive" : ""} ${
+      contractId === selectedContractId ? "selected-row" : ""
+    }`;
   };
 
   return (
@@ -180,9 +231,7 @@ function ArchivedContracts() {
               archivedContracts.map((contract) => (
                 <tr
                   key={contract._id}
-                  className={
-                    contract._id === selectedContractId ? "selected-row" : ""
-                  }
+                  className={getRowClassName(contract._id)}
                 >
                   <td>{contract.payGroup}</td>
                   <td>{contract.frequency}</td>
