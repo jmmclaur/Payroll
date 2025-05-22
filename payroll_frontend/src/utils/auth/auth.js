@@ -7,6 +7,17 @@ const auth = {
   isAdmin: false,
   token: null,
 
+  register(name, email, password, company, companyCode) {
+    return fetch(`${baseUrl}/signup`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password, company, companyCode }),
+    }).then(checkResponse);
+  },
+
   login(data) {
     console.log("Setting login data:", data);
     this.isUser = true;
@@ -46,6 +57,7 @@ const auth = {
   },
 };
 
+/*
 export function register(name, email, password, company, companyCode) {
   return fetch(`${baseUrl}/signup`, {
     method: "POST",
@@ -55,7 +67,7 @@ export function register(name, email, password, company, companyCode) {
     },
     body: JSON.stringify({ name, email, password, company, companyCode }),
   }).then(checkResponse);
-}
+} */
 
 export const login = (email, password) => {
   console.log("1. Login function called with email:", email);
@@ -125,53 +137,5 @@ export const createContract = (
     return checkResponse(response);
   });
 };
-
-/*notification for request
-export const createNotification = (companyCode, contractId) => {
-  return fetch(`${baseUrl}/notifications`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-    },
-    body: JSON.stringify({
-      companyCode: companyCode,
-      contractId: contractId,
-      message: "Unarchive request submitted",
-      type: "unarchive_request",
-      status: "unread",
-    }),
-  }).then(checkResponse);
-};
-
-export const getNotifications = () => {
-  const isAdmin = localStorage.getItem("userRole") === "admin";
-  return fetch(
-    `${baseUrl}/notifications${isAdmin ? "?includeRead=true" : ""}`,
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-      },
-    }
-  ).then(checkResponse);
-};
-
-export const markNotificationsAsRead = (notificationIds) => {
-  return fetch(`${baseUrl}/notifications/read`, {
-    method: "PATCH",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-    },
-    body: JSON.stringify({
-      notificationIds: notificationIds,
-    }),
-  }).then(checkResponse);
-}; */
 
 export default auth;
