@@ -57,7 +57,6 @@ const auth = {
   },
 };
 
-/*
 export function register(name, email, password, company, companyCode) {
   return fetch(`${baseUrl}/signup`, {
     method: "POST",
@@ -67,7 +66,7 @@ export function register(name, email, password, company, companyCode) {
     },
     body: JSON.stringify({ name, email, password, company, companyCode }),
   }).then(checkResponse);
-} */
+}
 
 export const login = (email, password) => {
   console.log("1. Login function called with email:", email);
